@@ -1,98 +1,120 @@
 const { sequelize } = require("../../connection");
-const { TopicModel } = require("../../model/topics.model");
-const TopicService = require("../../service/topics.service");
+const { TopicsModel } = require("../../model/topics.model");
+const TopicsService = require("../../service/topics.service");
 
+///cuando se trata de listar es mejor usar SQL puro por cuestion de tiempo
 const listar = async function (req, res) {
+
     console.log("listar topicos");
+
     try {
-        const topics = await TopicService.listar(req.query.filtro || '');
-        console.log("topics", topics);
+        const topics = await TopicsService.listar(req.query.filtro || '');
+
         if (topics) {
+            // en users[0] se encuentra el listado de lo que se recupera desde el sql
             res.json({
-                succes: true,
-                topicos: topics
+                success: true,
+                topicos: topics[0]
             });
+
         } else {
             res.json({
-                succes: true,
+                success: true,
                 topicos: []
             });
+
         }
     } catch (error) {
         console.log(error);
         res.json({
-            succes: false,
+            success: false,
             error: error.message
         });
+
     }
+
 };
 
-const buscarPorCodigo = async function (req, res) {
-    console.log("consultar topico");
+const consultarPorCodigo = async function (req, res) {
+    console.log("consultar 1 topico por codigo");
 
     try {
-        const topicModelResult = await TopicService.buscarPorCodigo(req.params.id, req.body.topic);
-        if (topicModelResult) {
+        const topicsModelResult = await TopicsService.consultarPorCodigo(req.params.id);
+
+        if (topicsModelResult) {
             res.json({
-                succes: true,
-                topic: topicModelResult
+                success: true,
+                topicos: topicsModelResult
             });
+
         } else {
             res.json({
-                succes: true,
-                topico: null
+                success: true,
+                topicos: null
             });
+
         }
     } catch (error) {
         console.log(error);
         res.json({
-            succes: false,
+            success: false,
             error: error.message
         });
+
     }
+
 };
 
 const actualizar = async function (req, res) {
-    console.log("actualizar topico");
-    let topicoRetorno = null;
+    console.log("actualizar topicos");
+    
+    let topicoRetorno = null; //guarda el topico que se va incluir o editar;
 
     try {
-        topicoRetorno = await TopicService.actualizar(req.body.id, req.body.create_date, req.body.name, 
-                                                        req.body.topic_id, req.body.order, req.body.priority, 
-                                                        req.body.color, req.body.owner_user_id);
-        
+        let topicoRetorno = await TopicsService.actualizar(
+        req.body.id,
+        req.body.create_date,
+        req.body.name,
+        req.body.topic_id,
+        req.body.order,
+        req.body.priority,
+        req.body.color,
+        req.body.owner_user_id
+        );
+       
         res.json({
-            succes: true,
-            topico: topicoRetorno
+            success: true,
+            topics: topicoRetorno
         });
-        
     } catch (error) {
         console.log(error);
         res.json({
-            succes: false,
+            success: false,
             error: error.message
         });
     }
 };
 
 const eliminar = async function (req, res) {
-    console.log("eliminar topico");
+    console.log("eliminar topicos");
 
     try {
-        //TopicModel.destroy(req.params.id);
-        await TopicService.eliminar(req.params.id);
+        const topicoRetorno = await TopicsService.eliminar(req.params.id);
         res.json({
-            succes: true,
+            success: topicoRetorno,
         });
+
     } catch (error) {
         console.log(error);
         res.json({
-            succes: false,
+            success: false,
             error: error.message
         });
+
+
     }
 };
 
 module.exports = {
-    listar, buscarPorCodigo, actualizar, eliminar
+    listar, consultarPorCodigo, actualizar, eliminar
 };

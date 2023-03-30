@@ -1,29 +1,41 @@
 const { sequelize } = require("../connection");
-const { ThemeModel } = require("../model/themes.model");
+const { ThemesModel } = require("../model/themes.model");
 
+///cuando se trata de listar es mejor usar SQL puro por cuestion de tiempo
 const listar = async function (textoBuscar) {
+
     console.log("listar temas");
+
     try {
-        const themes = await sequelize.query(`SELECT * FROM themes WHERE  
-                                            UPPER(name) LIKE UPPER('%${textoBuscar}%') 
-                                            ORDER BY id`);
-        console.log("themes", themes);
+        const themes = await sequelize.query(`SELECT *
+        FROM themes
+        WHERE 1=1
+        AND UPPER (name) LIKE UPPER ('%${textoBuscar}%')
+        ORDER BY id`);
+
         if (themes && themes[0]) {
             return themes[0];
         } else {
             return [];
         }
+
     } catch (error) {
+        console.log(error);
         throw error;
     }
+
 };
 
-const buscarPorCodigo = async function (id) {
-    console.log("consultar tema");
+const consultarPorCodigo = async function (id) {
+
+    console.log("consultar 1 tema por codigo");
+
     try {
-        const themeModelResult = await ThemeModel.findByPk(id);
-        if (themeModelResult) {
-            return themeModelResult;
+        const themesModelResult = await ThemesModel.findByPk(id);
+
+        if (themesModelResult) {
+            return themesModelResult;
+
         } else {
             return null;
         }
@@ -31,23 +43,34 @@ const buscarPorCodigo = async function (id) {
         console.log(error);
         throw error;
     }
+
 };
 
-const actualizar = async function (id, create_date, name, description, keywords, owner_user_id) {
-    console.log("actualizar tema");
-    let temaRetorno = null;
-    const data = {id, create_date, name, description, keywords, owner_user_id};
+const actualizar = async function (
+    id,
+    create_date,
+    name,
+    description,
+    keywords,
+    owner_user_id
+) {
+    console.log("actualizar temas");
+    let temaRetorno = null; //guarda el tema que se va incluir o editar;
+    const data = {
+        id, create_date, name, description, keywords,
+        owner_user_id
+    }; //se obtiene los datos del cuerpo de la peticion
 
     try {
-        let themeModelResult = null;
+        let temaExiste = null;
         if (id) {
-            themeModelResult = await ThemeModel.findByPk(id);
+            temaExiste = await ThemesModel.findByPk(id);
         }
-        if (themeModelResult) {
-            temaRetorno = await ThemeModel.update(data, { where: { id: id } });
+        if (temaExiste) {
+            temaRetorno = await ThemesModel.update(data, { where: { id: id } });
             temaRetorno = data;
         } else {
-            temaRetorno = await ThemeModel.create(data);
+            temaRetorno = await ThemesModel.create(data);
         }
         return temaRetorno;
     } catch (error) {
@@ -57,13 +80,11 @@ const actualizar = async function (id, create_date, name, description, keywords,
 };
 
 const eliminar = async function (id) {
-    console.log("eliminar tema");
+    console.log("eliminar temas");
 
     try {
-        //ThemeModel.destroy(req.params.id);
-        const themes = await sequelize.query("DELETE FROM themes WHERE id = " + id);
-        console.log("tema eliminado");
-        return themes;
+        await ThemesModel.destroy({ where: { id: id } });
+        return true;
     } catch (error) {
         console.log(error);
         throw error;
@@ -71,5 +92,5 @@ const eliminar = async function (id) {
 };
 
 module.exports = {
-    listar, buscarPorCodigo, actualizar, eliminar
+    listar, consultarPorCodigo, actualizar, eliminar
 };
