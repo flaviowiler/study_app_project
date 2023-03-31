@@ -75,6 +75,9 @@ const actualizar = async function (req, res) {
         });
     }
 }; 
+
+
+
 const eliminar = async function (req, res) {
     console.log("eliminar temas propiedades");
    
