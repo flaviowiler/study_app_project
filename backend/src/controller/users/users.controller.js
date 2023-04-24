@@ -1,99 +1,108 @@
-const { sequelize } = require("../../connection");
-const { UserModel } = require("../../model/users.model");
-const UserService = require("../../service/users.service");
+const {sequelize} = require("../../connection");
+const {UserModel} = require("../../model/user.model");
+const UserService = require('../../service/users.service');
 
-const listar = async function (req, res) {
-    console.log("listar usuarios");
-
+const listarController = async function(req, res) {
+    console.log("listar usuarios controller");
     try {
-        const users = await UserService.listar(req.query.filtro || '');
-
-        console.log("users", users);
-        if (users) {
+        const users = await UserService.listarService(req.query.filtro || '');
+        
+        if (users){
             res.json({
-                success: true,
-                usuarios: users
+                success : true, 
+                usuarios : users
             });
         } else {
             res.json({
-                success: true,
-                usuarios: []
+                success : true, 
+                usuarios : []
             });
-        }
+        }        
     } catch (error) {
+        console.log(error);
         res.json({
-            success: false,
-            error: error.message
+            success : false, 
+            error : error.message
         });
     }
+
 };
 
-const consultarPorCodigo = async function (req, res) {
-    console.log("consultar usuario");
-
+const consultarPorCodigo = async function(req, res) {
+    console.log("consultar 1 usuario por codigo");
     try {
-        const userModelResult = await UserService.consultarPorCodigo(req.params.id);
+        //Buscar en la Base de datos por codigo
+        const userModelResult = await UserModel.findByPk(req.params.id);
+
         if (userModelResult) {
             res.json({
-                success: true,
-                usuario: userModelResult
+                success : true, 
+                usuario : userModelResult
             });
         } else {
             res.json({
-                success: true,
-                usuario: null
+                success : true, 
+                usuario : null
             });
         }
     } catch (error) {
         console.log(error);
         res.json({
-            success: false,
-            error: error.message
+            success : false, 
+            error : error.message
         });
     }
+
 };
 
-const actualizar = async function (req, res) {
-    console.log("actualizar usuarios");
+const actualizar = async function(req, res) {
+    console.log("actualizar usuarios controller");
     //Variables
-    let usuarioRetorno = null; //Guardará el usuario que se va a incluir o editar
-
+    let usuarioRetorno = null;    //Guardara el usuario que se va incluir o editar.
+     
     try {
-            usuarioRetorno = await UserService.actualizar(  req.body.id, req.body.name, req.body.lastname, 
-                                                            req.body.avatar, req.body.email, 
-                                                            req.body.password, req.body.deleted);
+        usuarioRetorno = await UserService.actualizar(  req.body.id, 
+                                                        req.body.name, 
+                                                        req.body.last_name, 
+                                                        req.body.avatar, 
+                                                        req.body.email, 
+                                                        req.body.password, 
+                                                        req.body.deleted);
         res.json({
-            success: true,
-            user: usuarioRetorno
+            success : true, 
+            user : usuarioRetorno
         });
     } catch (error) {
         console.log(error);
         res.json({
-            success: false,
-            error: error.message
+            success : false, 
+            error : error.message
         });
     }
 };
 
-const eliminar = async function (req, res) {
+const eliminar = async function(req, res) {
     console.log("eliminar usuarios");
-    //BorradoFisico
+    //res.send("eliminar de usuarios");
+
+    //Borrado fisico
     //UserModel.destroy(req.params.id);
     try {
-        await UserService.eliminar(req.params.id);
+        await sequelize.query("UPDATE users SET deleted=true WHERE id = " + req.params.id);
+            
         res.json({
-            success: true
+            success : true
         });
     } catch (error) {
         console.log(error);
         res.json({
-            success: false,
-            error: error.message
+            success : false, 
+            error : error.message
         });
     }
 };
 
 
 module.exports = {
-    listar, consultarPorCodigo, actualizar, eliminar, nuevoregistro
+    listarController, busquedaPorCodigo: consultarPorCodigo, actualizar, eliminar
 };

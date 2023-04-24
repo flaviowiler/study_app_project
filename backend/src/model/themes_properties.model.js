@@ -20,7 +20,7 @@ const ThemesPropertiesModel = sequelize.define('ThemesProperties', {
     tableName: 'themes_properties',
     timestamps: false
 });
+
 module.exports = {
     ThemesPropertiesModel
 }; 
- 
