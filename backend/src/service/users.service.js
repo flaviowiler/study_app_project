@@ -69,6 +69,7 @@ const actualizar = async function(id, name, last_name, avatar, email, password, 
             usuarioRetorno = data;
         } else {
             //Incluir
+            data.deleted = 0;
             usuarioRetorno = await UserModel.create(data);
         }
         return usuarioRetorno;

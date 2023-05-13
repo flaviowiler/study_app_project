@@ -8,7 +8,7 @@ const listar = async function (req, res) {
     try {
         const themes = await ThemesService.listar(req.query.filtro || '');
         if (themes) {
-            // en users[0] se encuentra el listado de lo que se recupera desde el sqll
+            // en users[0] se encuentra el listado de lo que se recupera desde el sql
             res.json({
                 success: true,
                 temas: themes
@@ -64,6 +64,7 @@ const actualizar = async function (req, res) {
             req.body.keywords,
             req.body.owner_user_id
         );
+
         res.json({
             success: true,
             themes: temaRetorno
@@ -79,11 +80,13 @@ const actualizar = async function (req, res) {
 
 const eliminar = async function (req, res) {
     console.log("eliminar temas");
+   
     try {
-        const temaRetorno = await ThemesService.eliminar(req.params.id);
+        const temaRetorno =  await ThemesService.eliminar(req.params.id);
         res.json({
             success: temaRetorno,
         });
+
     } catch (error) {
         console.log(error);
         res.json({

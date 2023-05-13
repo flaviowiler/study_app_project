@@ -2,14 +2,13 @@ const { sequelize } = require("../../connection");
 const { ThemesPropertiesModel } = require("../../model/themes_properties.model");
 const ThemesPropertiesService = require('../../service/themes_properties.service');
 
-///cuando se trata de listar es mejor usar SQL puro por cuestion de tiempo
-////listar
+
 const listar = async function (req, res) {
     console.log("listar temas/propiedades");
     try {
         const themes_properties = await ThemesPropertiesService.listar(req.query.filtro || '');
         if (themes_properties) {
-            // en users[0] se encuentra el listado de lo que se recupera desde el sql
+           
             res.json({
                 success: true,
                 temas_propiedades: themes_properties
@@ -29,7 +28,6 @@ const listar = async function (req, res) {
     }
 }; 
 
-///consultar por codigo 
 const consultarPorCodigo = async function (req, res) {
     console.log("consultar 1 tema/propiedad por codigo");
     try {
@@ -54,10 +52,9 @@ const consultarPorCodigo = async function (req, res) {
     }
 }; 
 
-//actualizar sirve para insertar y editar
 const actualizar = async function (req, res) {
     console.log("actualizar temas propiedades");
-    let tema_propiedadRetorno = null; //guarda el tema que se va incluir o editar;
+    let tema_propiedadRetorno = null; 
     try {
         let tema_propiedadRetorno = await ThemesPropertiesService.actualizar(
             req.body.id,
@@ -79,7 +76,8 @@ const actualizar = async function (req, res) {
     }
 }; 
 
-//eliminar registro fisicamente 
+
+
 const eliminar = async function (req, res) {
     console.log("eliminar temas propiedades");
    
@@ -97,7 +95,6 @@ const eliminar = async function (req, res) {
         });
     }
 }; 
-
 module.exports = {
     listar, consultarPorCodigo, actualizar, eliminar
 };
