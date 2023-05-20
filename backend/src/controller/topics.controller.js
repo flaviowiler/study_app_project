@@ -1,19 +1,19 @@
-const ThemeService = require("../../service/themes.service");
+const TopicService = require("../service/topics.service");
 
 const listar = async function (req, res) {
-    console.log("listar temas");
+    console.log("listar topicos");
     try {
-        const themes = await ThemeService.listar(req.query.filtro || '');
-        console.log("themes", themes);
-        if (themes) {
+        const topics = await TopicService.listar(req.query.filtro || '');
+        console.log("topics", topics);
+        if (topics) {
             res.json({
                 succes: true,
-                temas: themes
+                topicos: topics
             });
         } else {
             res.json({
                 succes: true,
-                temas: []
+                topicos: []
             });
         }
     } catch (error) {
@@ -26,18 +26,19 @@ const listar = async function (req, res) {
 };
 
 const buscarPorCodigo = async function (req, res) {
-    console.log("consultar tema");
+    console.log("consultar topico");
+
     try {
-        const themeModelResult = await ThemeService.buscarPorCodigo(req.params.id);
-        if (themeModelResult) {
+        const topicModelResult = await TopicService.buscarPorCodigo(req.params.id, req.body.topic);
+        if (topicModelResult) {
             res.json({
                 succes: true,
-                tema: themeModelResult
+                topic: topicModelResult
             });
         } else {
             res.json({
                 succes: true,
-                tema: null
+                topico: null
             });
         }
     } catch (error) {
@@ -50,35 +51,36 @@ const buscarPorCodigo = async function (req, res) {
 };
 
 const actualizar = async function (req, res) {
-    console.log("actualizar tema");
-    let temaRetorno = null;
+    console.log("actualizar topico");
+    let topicoRetorno = null;
 
     try {
-        temaRetorno = await ThemeService.actualizar(req.body.id, req.body.create_date, req.body.name, 
-                                                    req.body.description, req.body.keywords, 
-                                                    req.body.owner_user_id);
+        topicoRetorno = await TopicService.actualizar(req.body.id, req.body.create_date, req.body.name, 
+                                                        req.body.topic_id, req.body.order, req.body.priority, 
+                                                        req.body.color, req.body.owner_user_id);
+        
         res.json({
             succes: true,
-            tema: temaRetorno
+            topico: topicoRetorno
         });
+        
     } catch (error) {
         console.log(error);
         res.json({
             succes: false,
-            error: error.messages
+            error: error.message
         });
     }
 };
 
 const eliminar = async function (req, res) {
-    console.log("eliminar tema");
+    console.log("eliminar topico");
 
     try {
-        //ThemeModel.destroy(req.params.id);
-        const themes = await ThemeService.eliminar(req.params.id);
-        console.log("tema eliminado");
+        //TopicModel.destroy(req.params.id);
+        await TopicService.eliminar(req.params.id);
         res.json({
-            succes: true
+            succes: true,
         });
     } catch (error) {
         console.log(error);

@@ -6,11 +6,11 @@ import axios from 'axios';
 import { DataService, Message } from '../services/data.service';
 
 @Component({
-  selector: 'app-edit-user',
-  templateUrl: './edit-user.page.html',
-  styleUrls: ['./edit-user.page.scss'],
+  selector: 'app-login',
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
 })
-export class EditUserPage implements OnInit {
+export class LoginPage implements OnInit {
   public message!: Message;
   private data = inject(DataService);
   private activatedRoute = inject(ActivatedRoute);
@@ -23,13 +23,7 @@ export class EditUserPage implements OnInit {
   ngOnInit() {
     const id = this.activatedRoute.snapshot.paramMap.get('id') as string;
     //this.message = this.data.getMessageById(parseInt(id, 10));
-    let token =localStorage.getItem('token');
-    let config = {
-      headers : {
-        "Authorization": token
-      }
-    }
-    axios.get("http://localhost:4000/user/" + id, config)
+    axios.get("http://localhost:3000/user/" + id)
     .then( result => {
       if (result.data.success == true) {
 
@@ -38,51 +32,56 @@ export class EditUserPage implements OnInit {
         }else{
           this.usuario = {};
         }
-       
+
       } else {
         console.log(result.data.error);
       }
-      
+
     }).catch(error => {
       console.log(error.message);
     })
   }
 
+  ionViewWillEnter(): void {
+
+    //verificar si el usuario esta logueado
+    let token = localStorage.getItem('token');
+
+    if (token){
+      this.router.navigate(["/home"]);
+    }
+  }
+
   getBackButtonText() {
     const isIos = this.platform.is('ios')
     return isIos ? 'Inbox' : '';
-    
 
-    
+
+
   }
 
-  saveUser(){
-    console.log("usuario", this.usuario);
+  loginUser(){
+    console.log("Login Usuario");
     var data = {
-      id : this.usuario.id,
-      name: this.usuario.name,
-      last_name: this.usuario.last_name,
-      email: this.usuario.email
+      email: this.usuario.email,
+      password: this.usuario.password
     }
-    console.log(data);
 
-    let token =localStorage.getItem('token');
-    let config = {
-      headers : {
-        "Authorization": token
-      }
-    }
-    axios.post("http://localhost:4000/users/update" , data, config)
+    //console.log(data);
+
+    axios.post("http://localhost:3000/user/login" , data)
     .then(  async result => {
       if (result.data.success == true) {
-        console.log(result.data);
-        this.presentToats ("Usuario Guardado!!!");
-          this.router.navigate(["/home"]);
+        //console.log(result.data);
+        this.presentToats ("Bienvenido");
+        localStorage.setItem("token", result.data.token);
+
+        this.router.navigate(["/home"]);
       } else {
         this.presentToats (result.data.error );
-        
+
       }
-      
+
     }).catch( async error => {
       this.presentToats (error.message.data.error );
     })
@@ -92,7 +91,7 @@ export class EditUserPage implements OnInit {
     const toast = await this.toastController.create({
       message:message,
       duration: 1500,
-      position: 'bottom',
+      position: 'top',
       });
 
     await toast.present();

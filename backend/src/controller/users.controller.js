@@ -1,6 +1,6 @@
-const UserService = require("../../service/users.service");
+const UserService = require("../service/users.service");
 const jwt = require ('jsonwebtoken');
-const { sequelize } = require("../../connection");
+const { sequelize } = require("../connection");
 const listar = async function (req, res) {
     console.log("listar usuarios");
 

@@ -1,5 +1,5 @@
 const { DataTypes, INTEGER } = require('sequelize');
-const { sequelize } = require('../connection');
+const { sequelize } = require('../../connection');
 
 const ThemesPropertiesModel = sequelize.define('ThemesProperties', {
     id: {

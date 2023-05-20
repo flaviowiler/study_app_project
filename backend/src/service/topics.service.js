@@ -1,86 +1,55 @@
 const { sequelize } = require("../connection");
-const { TopicsModel } = require("../model/topics.model");
+const { TopicModel } = require("../model/topics.model");
 
-///cuando se trata de listar es mejor usar SQL puro por cuestion de tiempo
 const listar = async function (textoBuscar) {
-
     console.log("listar topicos");
-
     try {
-        const topics = await sequelize.query(`SELECT * 
-        FROM topics
-        WHERE 1=1 
-        AND UPPER (name) LIKE UPPER ('%${textoBuscar}%')
-        ORDER BY id`);
-
+        const topics = await sequelize.query( `SELECT * FROM topics WHERE
+                                            UPPER(name) LIKE UPPER('%${textoBuscar}%')
+                                            ORDER BY id`);
+        console.log("topics", topics);
         if (topics && topics[0]) {
-            // en users[0] se encuentra el listado de lo que se recupera desde el sql
             return topics[0];
         } else {
-            return [];
-
+            return []; 
         }
     } catch (error) {
         console.log(error);
         throw error;
     }
-
 };
 
-const consultarPorCodigo = async function (id) {
-    console.log("consultar 1 topico por codigo");
+const buscarPorCodigo = async function (id) {
+    console.log("Consultar topico");
 
     try {
-        const topicsModelResult = await TopicsModel.findByPk(id);
-
-        if (topicsModelResult) {
-            return topicsModelResult;
+        const topicModelResult = await TopicModel.findByPk(req.params.id);
+        if (topicModelResult) {
+            return topicModelResult;
         } else {
             return null;
-
         }
     } catch (error) {
         console.log(error);
         throw error;
     }
-
 };
 
-const actualizar = async function (
-    id,
-    create_date,
-    name,
-    topic_id,
-    order,
-    priority,
-    color,
-    owner_user_id
-) {
-    console.log("actualizar topicos");
-    
-    let topicoRetorno = null; //guarda el topico que se va incluir o editar;
-    const data = {
-        id,
-        create_date,
-        name,
-        topic_id,
-        order,
-        priority,
-        color,
-        owner_user_id
-    };
+const actualizar = async function (id, create_date, name, topic_id, order, priority, color, owner_user_id) {
+    console.log("actualizar topico");
+    let topicoRetorno = null;
+    const data = {id, create_date, name, topic_id, order, priority, color, owner_user_id};
 
     try {
-        let topicoExiste = null;
+        let topicModelResult = null;
         if (id) {
-            topicoExiste = await TopicsModel.findByPk(id);
+            topicModelResult = await TopicModel.findByPk(id);
         }
-        if (topicoExiste) {
-            topicoRetorno = await TopicsModel.update(data, { where: { id: id } });
+        if (topicModelResult) {
+            topicoRetorno = await TopicModel.update({data}, { where: { id: id } });
             topicoRetorno = data;
         } else {
-            topicoRetorno = await TopicsModel.create(data);
-
+            topicoRetorno = await TopicModel.create(data);
         }
         return topicoRetorno;
     } catch (error) {
@@ -90,20 +59,19 @@ const actualizar = async function (
 };
 
 const eliminar = async function (id) {
-    console.log("eliminar topicos");
+    console.log("eliminar topico");
 
     try {
-        await TopicsModel.destroy({ where: { id: id } });
-        return true;
+        //TopicModel.destroy(req.params.id);
+        const topics = await sequelize.query("DELETE FROM topics WHERE topic_id = " + id);
+        console.log("topico eliminado");
+        return topics;
     } catch (error) {
-
         console.log(error);
         throw error;
-
-
     }
 };
 
 module.exports = {
-    listar, consultarPorCodigo, actualizar, eliminar
+    listar, buscarPorCodigo, actualizar, eliminar
 };
