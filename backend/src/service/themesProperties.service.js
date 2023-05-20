@@ -1,5 +1,5 @@
 const { sequelize } = require("../connection");
-const { ThemesPropertiesModel } = require("../model/themesProperties.model");
+const { ThemesPropertiesModel } = require("../../model/themesProperties.model");
 
 const listar = async function (id) {
 

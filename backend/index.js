@@ -10,8 +10,8 @@ app.use(cors({
 }));
 
 const userRoute = require("./src/route/users.users.route");
-const themeRoute = require("./src/route/themes.route");
-const topicRoute = require("./src/route/topics.route");
+const themeRoute = require("././src/route/themes.route");
+const topicRoute = require("././src/route/topics.route");
 const themesPropertiesRoute = require("./src/route/themesProperties.route"); 
 
 //Ruta raiz

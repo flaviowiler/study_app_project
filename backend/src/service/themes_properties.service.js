@@ -1,5 +1,5 @@
 const { sequelize } = require("../connection");
-const { ThemesPropertiesModel } = require("../model/themes_properties.model");
+const { ThemesPropertiesModel } = require("../../model/themes_properties.model");
 
 ///cuando se trata de listar es mejor usar SQL puro por cuestion de tiempo
 const listar = async function (textoBuscar) {
